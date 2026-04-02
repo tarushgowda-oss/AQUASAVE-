@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaSave 💧</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:#050816;color:white;overflow-x:hidden}
+
+/* WATER DROPLET INTRO */
+#intro{
+ position:fixed;top:0;left:0;width:100%;height:100%;
+ background:black;z-index:9999;overflow:hidden;
+ display:flex;justify-content:center;align-items:center;flex-direction:column;
+}
+
+.droplet{
+ position:absolute;
+ width:6px;height:20px;
+ background:#00ccff;
+ top:-30px;
+ animation:fall linear infinite;
+ opacity:0.7;
+}
+
+@keyframes fall{
+ to{transform:translateY(110vh)}
+}
+
+#intro h1{font-family:'Orbitron';font-size:3em;color:#00ccff;text-shadow:0 0 25px #00ccff}
+#enterText{margin-top:20px;color:#38bdf8;animation:blink 1s infinite}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* HERO */
+.hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle,#0ea5e9,#020617)}
+.hero h1{font-family:'Orbitron';font-size:4em;text-shadow:0 0 25px #00ccff}
+.hero p{opacity:0.8}
+
+.section{padding:80px 20px;display:flex;justify-content:center}
+.container{max-width:1100px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+
+/* HOVER EFFECTS */
+.box{
+ background:linear-gradient(145deg,#0f172a,#020617);
+ border:1px solid rgba(0,255,255,0.2);
+ border-radius:20px;
+ padding:30px;
+ transition:0.4s;
+ position:relative;
+ overflow:hidden;
+}
+
+.box::before{
+ content:"";
+ position:absolute;
+ width:200%;height:200%;
+ background:radial-gradient(circle,#00ccff33,transparent);
+ top:-50%;left:-50%;
+ opacity:0;
+ transition:0.5s;
+}
+
+.box:hover::before{opacity:1}
+.box:hover{transform:translateY(-15px) scale(1.04);box-shadow:0 0 40px #00ccff}
+
+h2{margin-bottom:15px;color:#00ccff}
+p{line-height:1.8;margin-bottom:12px}
+.highlight{color:#38bdf8;font-weight:bold}
+
+#game{width:100%;height:300px;border:2px solid #00ccff;border-radius:15px;position:relative;overflow:hidden;margin-top:20px}
+#bucket{width:100px;height:40px;background:#00ccff;position:absolute;bottom:10px;border-radius:10px;box-shadow:0 0 15px #00ccff}
+.drop{width:18px;height:18px;background:#38bdf8;border-radius:50%;position:absolute;top:0;box-shadow:0 0 12px #38bdf8}
+
+button{margin:8px;padding:10px 18px;border:none;border-radius:6px;background:#00ccff;color:black;font-weight:bold;cursor:pointer}
+button:hover{background:#38bdf8;transform:scale(1.1)}
+
+footer{text-align:center;padding:50px;font-size:24px;background:#020617;color:#00ccff}
+
+@media(max-width:768px){.container{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="intro">
+<h1>AquaSave 💧</h1>
+<div id="enterText">Press ENTER to Start ⏎</div>
+</div>
+
+<div class="hero">
+<h1>AquaSave 💧</h1>
+<p>Future of Water Starts Now</p>
+</div>
+
+<div class="section">
+<div class="container">
+<div class="box"><h2>🚰 Crisis</h2><p><span class="highlight">Water crisis is real</span> and growing fast across cities.</p><p>Mismanagement is the real issue.</p></div>
+<div class="box"><h2>📊 Facts</h2><p><span class="highlight">600M+ affected</span> by water stress.</p><p>Only 3% usable water.</p></div>
+<div class="box"><h2>💡 Solutions</h2><p>Smart saving and <span class="highlight">AI tracking</span>.</p><p>Use water wisely.</p></div>
+<div class="box"><h2>🌍 Impact</h2><p>Saving water saves lives.</p><p><span class="highlight">Future depends on us</span>.</p></div>
+</div>
+</div>
+
+<div class="section">
+<div style="width:650px;max-width:90%;text-align:center">
+<h2>🎮 Game</h2>
+<div id="game"><div id="bucket"></div></div>
+<button onclick="startGame()">Start</button>
+<button onclick="pauseGame()">Pause</button>
+<button onclick="stopGame()">Stop</button>
+<p id="score">Score: 0</p>
+<p id="level">Level: 1</p>
+</div>
+</div>
+
+<footer>
+Millions of people suffer without water. We have it. We will save it 💧
+</footer>
+
+<script>
+// CREATE DROPLETS
+for(let i=0;i<50;i++){
+ let d=document.createElement('div');
+ d.className='droplet';
+ d.style.left=Math.random()*100+'%';
+ d.style.animationDuration=(Math.random()*2+2)+'s';
+ document.getElementById('intro').appendChild(d);
+}
+
+// ENTER START
+window.addEventListener('keydown',(e)=>{
+ if(e.key==='Enter'){
+  let intro=document.getElementById('intro');
+  intro.style.transition='1s';
+  intro.style.opacity='0';
+  setTimeout(()=>intro.style.display='none',1000);
+ }
+});
+
+let bucket=document.getElementById('bucket');
+let game=document.getElementById('game');
+let score=0,level=1,speed=2;
+let bucketX=200;
+let running=false;
+let intervals=[];
+
+function startGame(){if(running)return;running=true;intervals.push(setInterval(createDrop,700));}
+function pauseGame(){running=false;intervals.forEach(i=>clearInterval(i));intervals=[];}
+function stopGame(){pauseGame();score=0;level=1;speed=2;document.querySelectorAll('.drop').forEach(d=>d.remove());updateUI();}
+
+function createDrop(){if(!running)return;let drop=document.createElement('div');drop.className='drop';drop.style.left=Math.random()*(game.offsetWidth-20)+'px';game.appendChild(drop);
+let fall=setInterval(()=>{if(!running){clearInterval(fall);return}drop.style.top=(drop.offsetTop+speed)+'px';let b=bucket.getBoundingClientRect();let d=drop.getBoundingClientRect();
+if(d.bottom>b.top&&d.left>b.left&&d.right<b.right){score++;if(score%5==0){level++;speed+=0.5}updateUI();drop.remove();clearInterval(fall);} 
+if(drop.offsetTop>game.offsetHeight){drop.remove();clearInterval(fall);} },20);}
+
+function updateUI(){document.getElementById('score').innerText='Score: '+score;document.getElementById('level').innerText='Level: '+level;}
+
+window.addEventListener('keydown',(e)=>{if(e.key==='ArrowLeft')bucketX-=25;if(e.key==='ArrowRight')bucketX+=25;bucket.style.left=bucketX+'px';});
+</script>
+
+</body>
+</html>
